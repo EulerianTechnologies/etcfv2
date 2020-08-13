@@ -1,0 +1,11 @@
+CMakeFiles
+CMakeCache.txt
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+.ninja_deps
+.ninja_log
+build.ninja
+rules.ninja
