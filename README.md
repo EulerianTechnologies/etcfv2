@@ -1,5 +1,7 @@
-# etcfv2
-Eulerian TCFV2 reader high speed implementation in C
+# Eulerian Technologies IAB TCFv2 high speed reader implementation (in C)
+
+(gcc linux)
+
 
 **API**
 
