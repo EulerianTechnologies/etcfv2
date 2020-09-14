@@ -1,45 +1,16 @@
-/*
- * Copyright (c) 2020 by Eulerian Technologies SAS
+/* Copyright (c) 2020- by Eulerian Technologies SAS
+ *
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or
- * without modification, are permitted provided that the following
- * conditions are met:
+ * These sources are EXCLUSIVE internal use only.
  *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
+ * Author: Guillaume Fougnies
  *
- * * Redistributions in binary form must reproduce the above
- *   copyright notice, this list of conditions and the following
- *   disclaimer in the documentation and/or other materials
- *   provided with the distribution.
+ * No part of this package may be reproduced by any means,
+ * be it electronic, mechanical, photocopying, recording
+ * or otherwise, without the prior written permission of
+ * Eulerian Technologies SAS.
  *
- * * Neither the name of Eulerian Technologies nor the names of its
- *   contributors may be used to endorse or promote products
- *   derived from this software without specific prior written
- *   permission.
- *
- * THIS SOFTWARE IS PROVIDED BY <COPYRIGHT HOLDER> ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
- * <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
-
-/**
- * @file etcfv2.c
- * @brief ETCFV2 main
- * @author Guillaume Fougnies <guillaume@eulerian.com>
- * @version 0.1
- * @date 2020-08-01
  */
 
 #define ETCFV2_C
@@ -188,7 +159,7 @@ _etcfv2_bfrg_parser( void *b, int start, unsigned char **ptg, uint16_t *ptgnb )
  *
  */
 static const char Base64[] =
-"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/-_";
   static int
 _etcfv2_b64_dec( char *src, int srcsize, unsigned char *target, int targsize )
 {
@@ -205,6 +176,9 @@ _etcfv2_b64_dec( char *src, int srcsize, unsigned char *target, int targsize )
 		pos = strchr(base64, ch);
 		if (pos == 0)     /* A non-base64 character. */
 			return (-1);
+
+    if (pos-base64 > 63) /* Regulate second extended block -_ */
+      pos -= 2;
 
 		switch (state) {
 			case 0:
@@ -377,7 +351,7 @@ err:
 _etcfv2_bf2ids( unsigned char *in, int in_sz, etcfv2_ids_t *ids )
 {
   int i = 1; /* start @1 */
-  int nb_left = 0;
+  int x = 0, nb_left = 0;
 
   nb_left = _etcfv2_bf_set_nb( in, in_sz );
   if (! nb_left)
@@ -386,21 +360,21 @@ _etcfv2_bf2ids( unsigned char *in, int in_sz, etcfv2_ids_t *ids )
   ids->nb   = nb_left;
   ids->ids  = calloc( ids->nb, sizeof( *(ids->ids) ) );
 
-  while (in_sz && nb_left) {
+  while (in_sz && x<nb_left) {
     int byte = 0, bit;
     unsigned char c;
 
     if (in_sz >= 32) {
       int pos;
       if ((pos = __builtin_ffs( *((uint32_t*)in) ))) {
-        pos -= 32; /* msb */
+        //pos = 32 - pos; /* msb */
         byte=pos/8;
         i += byte*8;
-        for (; byte<4; byte++) {
+        for (; byte<4 && x<nb_left; byte++) {
           c = in[byte];
           for (bit=0;bit<8;bit++) {
             if (c & 0x80) {
-              ids->ids[ --nb_left ] = i;
+              ids->ids[ x ++ ] = i;
             }
             c = c << 1;
             i ++;
@@ -415,9 +389,9 @@ _etcfv2_bf2ids( unsigned char *in, int in_sz, etcfv2_ids_t *ids )
 
     if (in_sz) {
       c = in[0];
-      for (bit=0;bit<8 && in_sz;bit++) {
+      for (bit=0;bit<8 && in_sz && x<nb_left;bit++) {
         if (c & 0x80) {
-          ids->ids[ --nb_left ] = i;
+          ids->ids[ x ++ ] = i;
         }
         c = c << 1;
         in_sz --;

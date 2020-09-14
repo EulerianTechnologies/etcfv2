@@ -8,7 +8,11 @@ char *as[] = {
 //  "COvFyGBOvFyGBAbAAAENAPCAAOAAAAAAAAAAAEEUACCKAAA"
 //"CO4EneNO4EneNLaAAAENAwCAAAAAAAAAAAAAEvQAgDOgGfAAAAAA.IGLtV_T9fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyZeH_B4Wv2MyvBX4JiQKGRgksjLBAQdtHGlcTQgBwIlViTLMYk2MjzNKJrJEilsbO2dYGD9Pn8HT3ZCY70-vv__7v3ff_3g"
 //"CO4EneNO4EneNLaAAAENAwCAAA8AAAAAAAAAEvQA4DMAM1AZwBnQDPgAaACAAA.IGLtV_T9fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyZeH_B4Wv2MyvBX4JiQKGRgksjLBAQdtHGlcTQgBwIlViTLMYk2MjzNKJrJEilsbO2dYGD9Pn8HT3ZCY70-vv__7v3ff_3g"
-"CO4EneNO4EneNLaAAAENAwCEAA8AAAcAAAAAEvQA4DMAM1AZwBnQDPgAaACAAA.IGLtV_T9fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyZeH_B4Wv2MyvBX4JiQKGRgksjLBAQdtHGlcTQgBwIlViTLMYk2MjzNKJrJEilsbO2dYGD9Pn8HT3ZCY70-vv__7v3ff_3g"
+//"CO4EneNO4EneNLaAAAENAwCEAA8AAAcAAAAAEvQA4DMAM1AZwBnQDPgAaACAAA.IGLtV_T9fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyZeH_B4Wv2MyvBX4JiQKGRgksjLBAQdtHGlcTQgBwIlViTLMYk2MjzNKJrJEilsbO2dYGD9Pn8HT3ZCY70-vv__7v3ff_3g"
+//"COvFyGBOvFyGBAbAAAENAPCAAOAAAAAAAAAAAEEUACCKAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw"
+//"CO5owUhO5owUhAHABBENA2CsAP_AAH_AAAAAGetf_X_fb2vj-_5999t0eY1f9_63v-wzjgeNs-8NyZ_X_L4Xr2MyvB36pq4KuR4Eu3LBAQdlHOHcTQmQwIkVqTLsbk2Mq7NKJ7LEilMbM2dYGH9vn8XTuZCY70_sf__z_3-_-___67b-IGeEEmGpfAQJCWMBJNmlUKIEIVxIVAOACihGFo0sNCRwU7K4CPUECABAagIwIgQYgoxZBAAAAAElEQAkBwIBEARAIAAQArQEIACJAEFgBIGAQACgGhYARRBKBIQZHBUcogQFSLRQTzRgSQAA.f_gAD_gAAAAA" ,
+"CO5qoVvO5qoVvAHABBENA2CgAAAAAH_AAAAAAAAM8IJMNS-AgSEsYCSbNKoUQIQriQqAcAFFCMLRpYaEjgp2VwEeoIEACA1ARgRAgxBRiyCAAAAAJKIgBIDgQCIAiAQAAgBWgIQAESAILACQMAgAFANCwAiiCUCQgyOCo5RAgKkWignmjAkgAAAA.YAAAD_gAAAAA"
+
 };
 
 //#define SPEEDTEST   1000000
@@ -90,7 +94,7 @@ int main( void )
     printf("\n Loop on bitfields\n");
     int vendorid;
     printf(" Vendors: ");
-    for (vendorid=0; vendorid<etcfv2->vendor_consent_sz; vendorid++) {
+    for (vendorid=0; vendorid<=etcfv2->vendor_consent_sz; vendorid++) {
       if (ETCFV2_BF_HAS( etcfv2->vendor_consent, vendorid )) {
         printf("%d ", vendorid);
       }
@@ -98,7 +102,7 @@ int main( void )
     printf("\n");
 
     printf(" Vendors LI: ");
-    for (vendorid=0; vendorid<etcfv2->vendor_legitimate_interest_sz; vendorid++)
+    for (vendorid=1; vendorid<=etcfv2->vendor_legitimate_interest_sz; vendorid++)
     {
       if (ETCFV2_BF_HAS( etcfv2->vendor_legitimate_interest, vendorid )) {
         printf("%d ", vendorid);
@@ -108,7 +112,7 @@ int main( void )
 
     int purposeid;
     printf(" Purposes: ");
-    for (purposeid=0; purposeid<ETCFV2_PURPOSES_BF_SZ; purposeid++)
+    for (purposeid=1; purposeid<=ETCFV2_PURPOSES_BF_SZ; purposeid++)
     {
       if (ETCFV2_BF_HAS( etcfv2->purpose_consent, purposeid )) {
         printf("%d ", purposeid);
@@ -118,7 +122,7 @@ int main( void )
 
     int purposeliid;
     printf(" Purposes LI Transparency: ");
-    for (purposeliid=0; purposeliid<ETCFV2_PURPOSES_LI_BF_SZ; purposeliid++)
+    for (purposeliid=1; purposeliid<=ETCFV2_PURPOSES_LI_BF_SZ; purposeliid++)
     {
       if (ETCFV2_BF_HAS( etcfv2->purpose_li_transparency, purposeliid )) {
         printf("%d ", purposeliid);
@@ -128,7 +132,7 @@ int main( void )
 
     int specialfeaturesid;
     printf(" SpecialFeatures: ");
-    for (specialfeaturesid=0; specialfeaturesid<ETCFV2_SPECIAL_FEATURES_BF_SZ;
+    for (specialfeaturesid=1; specialfeaturesid<=ETCFV2_SPECIAL_FEATURES_BF_SZ;
          specialfeaturesid++) {
       if (ETCFV2_BF_HAS( etcfv2->special_features_optins, specialfeaturesid )) {
         printf("%d ", specialfeaturesid);
