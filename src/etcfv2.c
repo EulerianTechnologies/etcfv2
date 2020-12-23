@@ -123,15 +123,18 @@ _etcfv2_bf_set_nb( void *b, int sz )
 }
 
   static int
-_etcfv2_bfrg_parser( void *b, int start, unsigned char **ptg, uint16_t *ptgnb )
+_etcfv2_bfrg_parser(  void  *b,  int  start,  int  bits,
+                      unsigned  char  **ptg,  uint16_t  *ptgnb  )
 {
   uint16_t  i, bf_maxvendorid = 0;
   uint8_t   is_range = 0;
 
 #define __EXTRACT_XBITS( tg, len )     \
+  if  (start  +  len  >  bits)  goto  err;                                              \
   _extract_xbits( b, len, start, tg, len ); start += len;
 
 #define __EXTRACT_IBITS( tg, len )     \
+  if  (start  +  len  >  bits)  goto  err;                                              \
   tg = _extract_intbits( b, len, start ); start += len;
 
   __EXTRACT_IBITS( bf_maxvendorid, 16 );
@@ -175,6 +178,8 @@ _etcfv2_bfrg_parser( void *b, int start, unsigned char **ptg, uint16_t *ptgnb )
   *ptgnb = bf_maxvendorid;
 
   return start;
+err:
+  return  -1;
 }
 
 /*
@@ -307,12 +312,17 @@ _etcfv2_core_parser( etcfv2_t *etcfv2, char *s, int l )
   _EXTRACT_IBITS( publisher_cc[1],               6 );
 
   /* Vendor Consent Section */
-  start = _etcfv2_bfrg_parser( b, start,
+  start = _etcfv2_bfrg_parser( b, start, bits,
                                &(etcfv2->vendor_consent),
                                &(etcfv2->vendor_consent_sz) );
-  start = _etcfv2_bfrg_parser( b, start,
+  if  (start  <  0)
+    goto  err;
+
+  start = _etcfv2_bfrg_parser( b, start, bits,
                                &(etcfv2->vendor_legitimate_interest),
                                &(etcfv2->vendor_legitimate_interest_sz) );
+  if  (start  <  0)
+    goto  err;
 
   /* readable format */
   etcfv2->consent_lang[0] += 'A';
@@ -365,7 +375,7 @@ etcfv2_parse( char *s )
   return etcfv2;
 
 err:
-  free( etcfv2 );
+  etcfv2_free(  etcfv2  );
   return NULL;
 }
 
